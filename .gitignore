@@ -1,0 +1,17 @@
+# Node Modules
+node_modules/
+
+# Build output
+build/
+
+# Logs PM2
+logs/
+
+# Environment variables
+.env
+
+# Docker files Volumes
+docker/volumes
+
+# Ignore directory scripts
+src/script/

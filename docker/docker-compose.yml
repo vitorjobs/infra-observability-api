@@ -1,0 +1,82 @@
+# version: '3'
+
+# services:
+
+#   prometheus:
+#     image: prom/prometheus
+#     container_name: MTR_PROM
+#     restart: unless-stopped
+#     networks:
+#       MTR:
+#         ipv4_address: 172.24.0.2
+#     ports:
+#       - "9092:9090"  # porta do host diferente do container anterior
+#     volumes:
+#       - ./volumes/mtr_prometheus:/prometheus  # caminho de volume distinto
+#       - ./prometheus.yml:/etc/mtr_prometheus/prometheus.yml
+#     command:
+#       - '--config.file=/etc/prometheus/prometheus.yml'
+#       - '--storage.tsdb.path=/prometheus'
+#       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+#       - '--web.console.templates=/usr/share/prometheus/consoles'
+
+#   grafana:
+#     image: grafana/grafana
+#     container_name: MTR_GRAFANA
+#     restart: unless-stopped
+#     networks:
+#       MTR:
+#         ipv4_address: 172.24.0.3
+#     ports:
+#       - "3004:3000"  # alterado de 3003 para 3004
+#     volumes:
+#       - ./volumes/mtr_grafana:/var/lib/mtr_grafana  # caminho exclusivo
+
+# networks:
+#   MTR:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.24.0.0/24
+
+
+version: '3'
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: mtr_prometheus
+    restart: unless-stopped
+    networks:
+      mtr_net:
+        ipv4_address: 172.24.0.2
+    ports:
+      - "9092:9090"
+    volumes:
+      - ./volumes/mtr_prometheus:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+  grafana:
+    image: grafana/grafana
+    container_name: mtr_grafana
+    restart: unless-stopped
+    networks:
+      mtr_net:
+        ipv4_address: 172.24.0.3
+    ports:
+      - "3004:3000"
+    volumes:
+      - ./volumes/mtr_grafana:/var/lib/grafana
+
+networks:
+  mtr_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.24.0.0/24

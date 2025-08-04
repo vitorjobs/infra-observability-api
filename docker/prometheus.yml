@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 55s
+  evaluation_interval: 55s
+
+scrape_configs:
+  - job_name: 'Monitoramento' # Nome genérico para o job
+    static_configs:
+      # - targets: ['0.0.0.0:3333']
+      - targets: ['192.168.100.109:3001'] # IP do servidor onde a aplicação está rodando
+        labels:
+          app: 'VeeamOne' # Label para identificar a aplicação Veeam One
+  
+  # - job_name: 'exagrid'
+  #   static_configs:
+  #     # - metrics_path: '/metrics/exagrid'
+  #     - targets: ['192.168.100.109:3001']  # Substitua pelo IP/host do servidor onde o exportador roda
