@@ -1,6 +1,6 @@
-import { getAuthToken } from './auth/AuthService';
 import fetch from 'node-fetch';
 import https from 'https';
+import { getAuthToken } from '../auth/AuthService';
 
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
