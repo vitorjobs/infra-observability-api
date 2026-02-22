@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+  - name: 'VeeamOne Dashboards'
+    orgId: 1
+    folder: 'Veeam'
+    folderUid: 'veeam'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    # allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards  # ← apontar para onde os JSONs estão
+      foldersFromFilesStructure: false

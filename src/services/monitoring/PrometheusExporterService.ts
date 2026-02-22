@@ -31,8 +31,10 @@ import { FastifyInstance } from 'fastify';
 import { getExagridMetrics } from '../../util/ExagridPrometheusExporter';
 import { getCurrentSnapshotMetrics } from '../vcenter/GetSnapshot-services';
 import { getVeeamMetrics, updateVeeamMetrics } from '../../util/VeeamOnePrometheusExporter';
-import { GetAllProtectedVMsService } from '../veeamOne/GetAllProtectedVMsService';
-import { protectedVMMetrics } from '../../util/GetAllProtectedVMsServiceExporter';
+import { getVBRMetrics } from '../../util/VBR/InfoJobsExporter';
+import { getVBRSessionMetrics } from '../../util/VBR/InfoSessionsServiceExporter';
+// import { GetAllProtectedVMsService } from '../veeamOne/GetAllProtectedVMsService';
+// import { protectedVMMetrics } from '../../util/GetAllProtectedVMsServiceExporter';
 
 export function PrometheusExporter(app: FastifyInstance) {
   app.get('/metrics', async (_, reply) => {
@@ -41,6 +43,8 @@ export function PrometheusExporter(app: FastifyInstance) {
       // const snapshotMetrics = getCurrentSnapshotMetrics();
       // const vmsProtected = protectedVMMetrics()
       const veeamOneJobs = await updateVeeamMetrics()
+      const vbrMetrics = await getVBRMetrics()
+      const vbrSessions = await getVBRSessionMetrics()
 
 
 
@@ -50,6 +54,8 @@ export function PrometheusExporter(app: FastifyInstance) {
         // veeamOneJobs,
         // vmsProtected,
         veeamOneJobs,
+        vbrMetrics,
+        vbrSessions
         // metrics
 
       ].join('\n');

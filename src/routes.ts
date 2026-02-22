@@ -7,6 +7,8 @@ import { GetVeeamOneAboutController } from "./controllers/veeamOne/about/GetVeea
 import { GetAllProtectedVMsController } from "./controllers/veeamOne/compliance/GetAllProtectedVMsController";
 import { GetRepositoriesController } from "./controllers/veeamOne/repositories/GetRepositoriesController";
 import { TapeController } from "./controllers/veeamOne/tapes/TapeController";
+import { VBRSearchJobs } from "./controllers/VBR/JobsController";
+import { VBRSearchSessions } from "./controllers/VBR/SessionsController";
 
 
 
@@ -23,6 +25,11 @@ export async function appRoutes(app: FastifyInstance) {
 
   /** EXAGRID */
   app.get('/exagrid/infor', GetExagridInforController)
+
+
+  /** VEEAM BACKUP & REPLICATION 12.3*/
+  app.get('/SearchJobsVbr', VBRSearchJobs);
+  app.get('/SearchSessionsJobsVbr', VBRSearchSessions);
 }
 
 

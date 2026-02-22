@@ -1,4 +1,4 @@
-import { getAuthToken } from './auth/AuthService';
+import { getAuthToken } from '../auth/AuthService';
 import fetch from 'node-fetch';
 import https from 'https';
 

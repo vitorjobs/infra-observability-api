@@ -1,0 +1,39 @@
+global:
+  scrape_interval: 55s
+  evaluation_interval: 55s
+  external_labels:
+    monitor: 'veeamone-monitor'
+    environment: 'production'
+
+# Regras de alerta (opcional)
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  - job_name: 'Monitoramento'
+    scrape_interval: 55s
+    scrape_timeout: 50s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ['10.166.64.12:3001']
+        labels:
+          app: 'VeeamOne'
+          # environment: 'production'
+          # region: 'brasil'
+          # team: 'infraestrutura'
+    
+  # Auto-monitoramento do Prometheus
+  - job_name: 'Prometheus'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['10.166.64.12:9090']
+        labels:
+          app: 'prometheus'
+          environment: 'production'
+
+# Configuração de alertas (opcional)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []

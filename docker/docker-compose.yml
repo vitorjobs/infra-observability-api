@@ -1,82 +1,73 @@
-# version: '3'
-
-# services:
-
-#   prometheus:
-#     image: prom/prometheus
-#     container_name: MTR_PROM
-#     restart: unless-stopped
-#     networks:
-#       MTR:
-#         ipv4_address: 172.24.0.2
-#     ports:
-#       - "9092:9090"  # porta do host diferente do container anterior
-#     volumes:
-#       - ./volumes/mtr_prometheus:/prometheus  # caminho de volume distinto
-#       - ./prometheus.yml:/etc/mtr_prometheus/prometheus.yml
-#     command:
-#       - '--config.file=/etc/prometheus/prometheus.yml'
-#       - '--storage.tsdb.path=/prometheus'
-#       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-#       - '--web.console.templates=/usr/share/prometheus/consoles'
-
-#   grafana:
-#     image: grafana/grafana
-#     container_name: MTR_GRAFANA
-#     restart: unless-stopped
-#     networks:
-#       MTR:
-#         ipv4_address: 172.24.0.3
-#     ports:
-#       - "3004:3000"  # alterado de 3003 para 3004
-#     volumes:
-#       - ./volumes/mtr_grafana:/var/lib/mtr_grafana  # caminho exclusivo
-
-# networks:
-#   MTR:
-#     driver: bridge
-#     ipam:
-#       config:
-#         - subnet: 172.24.0.0/24
-
-
-version: '3'
+# version: '3.8'
 
 services:
-
   prometheus:
-    image: prom/prometheus
-    container_name: mtr_prometheus
+    image: prom/prometheus:latest
+    container_name: prometheus-producao
     restart: unless-stopped
-    networks:
-      mtr_net:
-        ipv4_address: 172.24.0.2
     ports:
-      - "9092:9090"
+      - "9090:9090"
     volumes:
-      - ./volumes/mtr_prometheus:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    user: "65534:65534"  # nobody:nobody user for Prometheus
+    networks:
+      - monitoring-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   grafana:
-    image: grafana/grafana
-    container_name: mtr_grafana
+    image: grafana/grafana:latest
+    container_name: grafana-producao
     restart: unless-stopped
-    networks:
-      mtr_net:
-        ipv4_address: 172.24.0.3
     ports:
-      - "3004:3000"
+      - "3000:3000"
     volumes:
-      - ./volumes/mtr_grafana:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      # - ./grafana/dashboards/VisaoExecutivaAmbienteVeeam.json:/var/lib/grafana/dashboards/VisaoExecutivaAmbienteVeeam.json:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_LOG_MODE=console
+      - GF_LOG_LEVEL=info
+    user: "472:472"  # grafana user id
+    networks:
+      - monitoring-network
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      # test: ["CMD", "wget", "--spider", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s  # Dá tempo para o Grafana iniciar
 
 networks:
-  mtr_net:
+  monitoring-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.24.0.0/24
+    name: monitoring-network
+
+volumes:
+  prometheus-data:
+    name: prometheus-data-producao
+    driver: local
+  grafana-data:
+    name: grafana-data-producao
+    driver: local

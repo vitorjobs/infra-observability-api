@@ -101,3 +101,86 @@ npm run delete:pm2
 npm run logs:pm2
 ```
 
+# Deploy 
+
+# 📋 Visão Geral do Fluxo
+
+text ```
+  Máquina Local (Dev) → SSH → VM Remota → Git Pull → Instalação Dependências → Restart Aplicação
+```
+
+
+  rm -rf node_modules
+
+    echo "🧹 Limpando módulos antigos do npm..."
+    npm cache clean --force
+
+
+
+
+7️⃣ Configuração de Chave SSH (para automação)
+bash
+# Na máquina local, gerar chave SSH
+ssh-keygen -t rsa -b 4096 -C "deploy@local"
+
+# Copiar chave pública para a VM
+ssh-copy-id -i ~/.ssh/id_rsa.pub suporte@10.166.64.12
+
+# Ou manualmente:
+cat ~/.ssh/id_rsa.pub | ssh suporte@10.166.64.12 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+
+```
+
+# Deploy - Verificações
+
+🚀 OPÇÃO 3 — Mais direto (sem depender do script remoto)
+
+Se você quiser nem depender de arquivo na VM, pode rodar direto:
+
+🔎 Status direto:
+ssh suporte@10.166.64.12 "pgrep -f start:prod && echo 'Rodando' || echo 'Parado'"
+🛑 Parar direto:
+ssh suporte@10.166.64.12 "pkill -f start:prod || echo 'Já estava parado'"
+
+
+root@VM-7CTA-APP-MTR:/home/suporte# kill -9 23338
+root@VM-7CTA-APP-MTR:/home/suporte# sudo lsof -i :3001
+root@VM-7CTA-APP-MTR:/home/suporte# ss -tulpn | grep 3001
+root@VM-7CTA-APP-MTR:/home/suporte# 
+
+##########3
+
+✅ PM2 instalado: 
+                        -------------
+
+__/\\\\\\\\\\\\\____/\\\\____________/\\\\____/\\\\\\\\\_____
+ _\/\\\/////////\\\_\/\\\\\\________/\\\\\\__/\\\///////\\\___
+  _\/\\\_______\/\\\_\/\\\//\\\____/\\\//\\\_\///______\//\\\__
+   _\/\\\\\\\\\\\\\/__\/\\\\///\\\/\\\/_\/\\\___________/\\\/___
+    _\/\\\/////////____\/\\\__\///\\\/___\/\\\________/\\\//_____
+     _\/\\\_____________\/\\\____\///_____\/\\\_____/\\\//________
+      _\/\\\_____________\/\\\_____________\/\\\___/\\\/___________
+       _\/\\\_____________\/\\\_____________\/\\\__/\\\\\\\\\\\\\\\_
+        _\///______________\///______________\///__\///////////////__
+
+
+                          Runtime Edition
+
+        PM2 is a Production Process Manager for Node.js applications
+                     with a built-in Load Balancer.
+
+                Start and Daemonize any application:
+                $ pm2 start app.js
+
+                Load Balance 4 instances of api.js:
+                $ pm2 start api.js -i 4
+
+                Monitor in production:
+                $ pm2 monitor
+
+                Make pm2 auto-boot at server restart:
+                $ pm2 startup
+
+                To go further checkout:
+                http://pm2.io/
+#########

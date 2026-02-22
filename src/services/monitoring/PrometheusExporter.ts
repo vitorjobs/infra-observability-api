@@ -6,6 +6,8 @@ import { getScaleOutRepositoryMetrics } from '../../util/GetRepositoryScaleoutEx
 import { getVeeamAboutMetrics } from '../../util/GetVeeamOneAboutExporter';
 import { getRepositoriesMetrics } from '../../util/GetRepositoriesExporter';
 // import { getVeeamMetrics, updateVeeamMetrics } from '../../util/VeeamOnePrometheusExporter';
+import { getVBRMetrics } from '../../util/VBR/InfoJobsExporter';
+import { getVBRSessionMetrics } from '../../util/VBR/InfoSessionsServiceExporter';
 
 export function PrometheusExporter(app: FastifyInstance) {
   app.get('/metrics', async (_, reply) => {
@@ -19,13 +21,17 @@ export function PrometheusExporter(app: FastifyInstance) {
       const vmMetrics = await getProtectedVMMetrics();
       const veeamAboutMetrics = await getVeeamAboutMetrics();
       const repositories = await getRepositoriesMetrics();
+      const vbrMetrics = await getVBRMetrics()
+      const vbrSessions = await getVBRSessionMetrics()
 
       const allMetrics = [
         veeamMetrics,
         vmMetrics,
         repositoryScaleOut,
         veeamAboutMetrics,
-        repositories
+        repositories,
+        vbrMetrics,
+        vbrSessions
       ].join('\n');
 
       reply

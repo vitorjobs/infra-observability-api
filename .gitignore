@@ -9,6 +9,7 @@ logs/
 
 # Environment variables
 .env
+.env.test
 
 # Docker files Volumes
 docker/volumes
