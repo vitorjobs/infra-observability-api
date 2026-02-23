@@ -9,7 +9,7 @@ set -e
 REMOTE_USER="suporte"
 REMOTE_HOST="10.166.64.12"
 REMOTE_DIR="/var/www/app"
-LOCAL_DOCKER_DIR="$(pwd)/docker"
+LOCAL_DOCKER_DIR="$HOME/Documentos/Asp_Guedes/01_Veeam/2026/infra-observability-api/docker"
 SSH_KEY="$HOME/.ssh/id_rsa"
 
 echo "🚀 Iniciando deploy Docker..."
