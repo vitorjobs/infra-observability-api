@@ -2,9 +2,15 @@ import { FastifyInstance } from 'fastify';
 // import { getVeeamMetrics, updateVeeamMetrics } from '../../util/VeeamOnePrometheusExporter';
 import { getProtectedVMMetrics, protectedVMMetrics } from '../../util/GetAllProtectedVMsServiceExporter';
 import { getVeeamMetrics, updateVeeamMetrics } from '../../util/GetJobsServiceExporter';
+// Comentei para teste - descomentar para usar as métricas de repositórios do veeam one
 import { getScaleOutRepositoryMetrics } from '../../util/GetRepositoryScaleoutExporter';
+
 import { getVeeamAboutMetrics } from '../../util/GetVeeamOneAboutExporter';
+
+// Comentei para teste - descomentar para usar as métricas de repositórios do veeam one
 import { getRepositoriesMetrics } from '../../util/GetRepositoriesExporter';
+
+
 // import { getVeeamMetrics, updateVeeamMetrics } from '../../util/VeeamOnePrometheusExporter';
 import { getVBRMetrics } from '../../util/VBR/InfoJobsExporter';
 import { getVBRSessionMetrics } from '../../util/VBR/InfoSessionsServiceExporter';
